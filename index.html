@@ -12,12 +12,15 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap"
         rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+        integrity="sha384-tViUnnbYAV00FLIhhi3v/dWt3Jxw4gZQcNoSCxCIFNJVCx7/D55/wXsrNIRANwdD" crossorigin="anonymous">
 </head>
 
 <body class="imperial dark">
+    <div class="loader" id="loader" style="display: none ;"></div>
     <!-- <img  class="Uicupy" src="./design/image.png" alt="" srcset=""> -->
     <div class="app">
-        <!-- Header -->
+        <!-- Header Completed  -->
         <header class="header">
             <div class="logo">
 
@@ -45,7 +48,7 @@
                     </svg>
                     <span>Units</span>
                     <img src="assets/images/arrow-down.svg" alt="" class="dropdown-arrow">
-                </button><button class="theme-toggle">🌙</button>
+                </button><button class="theme-toggle bi bi-brightness-low"></button>
 
                 <div class="units-menu" id="unitsMenu">
                     <button class="units-menu-item" id="switchToImperial">Switch to Imperial</button>
@@ -89,7 +92,7 @@
         <!-- Main Content -->
         <main class="main">
             <div class="main-h1-center">
-                <h1 class="main-title">How's the sky looking today?</h1>
+                <h1 class="main-title" id="title"></h1>
             </div>
             <!-- Search Section -->
             <div class="search-section">

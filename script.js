@@ -48,6 +48,7 @@ class WeatherApp {
         this.errorState = document.getElementById('errorState');
         this.loadingState = document.getElementById('loadingState');
         this.retryBtn = document.getElementById('retryBtn');
+        this.loader = document.getElementById('loader');
     }
 
     bindEvents() {
@@ -607,17 +608,22 @@ class WeatherApp {
         this.weatherContent.style.display = 'none';
         this.errorState.style.display = 'none';
         this.loadingState.style.display = 'block';
+        this.loader.style.display = 'flex';
     }
 
     hideLoading() {
         this.loadingState.style.display = 'none';
         this.weatherContent.style.display = 'block';
+        this.loader.style.display = 'none';
+
     }
 
     showError() {
         this.weatherContent.style.display = 'none';
         this.loadingState.style.display = 'none';
         this.errorState.style.display = 'block';
+                this.loader.style.display='none';
+
     }
 
     retry() {
@@ -632,7 +638,8 @@ class WeatherApp {
         // Show location loading
         this.searchStatus.textContent = "Detecting location...";
         this.searchStatus.className = "search-status search-in-progress";
-
+        this.currentLocation='Loading';
+        this.loader.style.display='flex';
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(async (position) => {
                 const latitude = position.coords.latitude;
@@ -714,11 +721,11 @@ class WeatherApp {
         if (document.body.classList.contains('dark')) {
             document.body.classList.remove('dark');
             document.body.classList.add('light');
-            this.themeToggle.textContent = "🌙";
+            this.themeToggle.classList= "theme-toggle bi bi-moon-fill";
         } else {
             document.body.classList.remove('light');
             document.body.classList.add('dark');
-            this.themeToggle.textContent = "☀️";
+            this.themeToggle.classList = "theme-toggle bi bi-brightness-low";
         }
     }
 }
@@ -730,4 +737,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
+const text = "How's the sky looking today?";
+const titleEl = document.getElementById("title");
+let index = 0;
 
+function type() {
+    if (index < text.length) {
+        titleEl.textContent += text[index];
+        index++;
+        setTimeout(type, 100); // typing speed
+    }
+}
+type()
+// Delay before typing starts (wait for fade up animation)
