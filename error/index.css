@@ -1,0 +1,607 @@
+/* RESET & BASE */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+  background: #e8fbe6;
+  color: #333;
+}
+
+/* HEADER WITH LOGOS */
+.header {
+  background: #dff3e4;
+  padding: 12px 40px;
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+
+.media-slider {
+
+  position: relative;
+
+  width: 100%;
+
+  max-width: 50%;
+
+  margin: 12px 0;
+
+}
+
+
+
+.media-slider .slides {
+
+  position: relative;
+
+  overflow: hidden;
+
+  /* max-width: 400px; */
+
+  border-radius: 8px;
+
+  background: #00000010;
+
+}
+
+
+
+.media-slider .slide {
+
+  width: 100%;
+
+  display: none;
+
+}
+
+
+
+.media-slider .slide.active {
+
+  display: block;
+
+}
+
+
+
+.media-slider .nav {
+
+  position: absolute;
+
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  border: none;
+
+  background: rgba(0,0,0,0.5);
+
+  color: #fff;
+
+  font-size: 22px;
+
+  line-height: 1;
+
+  width: 40px;
+
+  height: 40px;
+
+  border-radius: 999px;
+
+  cursor: pointer;
+
+  z-index: 2;
+
+}
+
+
+
+.media-slider .nav:hover { background: rgba(0,0,0,0.7); }
+
+.media-slider .nav.prev { left: 8px; }
+
+.media-slider .nav.next { right: 8px; }
+
+
+
+.media-slider .dots {
+
+  display: flex;
+
+  gap: 6px;
+
+  /* max-width: 680px; */
+
+  justify-content: center;
+
+  align-items: center;
+
+  margin-top: 8px;
+
+}
+
+
+
+.media-slider .dots button {
+
+  width: 8px;
+
+  height: 8px;
+
+  border-radius: 999px;
+
+  border: none;
+
+  background: #cfd8dc;
+
+  cursor: pointer;
+
+}
+
+
+
+.media-slider .dots button.active {
+
+  background: #1976d2;
+
+}
+
+.header .logo-ecoclubs {
+  display: flex;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
+.logo-ecoclubs .green {
+  background: #388e3c;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 4px 0 0 4px;
+}
+
+.logo-ecoclubs .orange {
+  background: #f57c00;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 0 4px 4px 0;
+}
+
+.header img {
+  height: 76px;
+}
+
+/* MARQUEE LINK */
+.landing-link {
+  width: 100%;
+  background: #fff3e0;
+   display: flex;               /* Make it a flex container */
+  justify-content: center;     /* Center children horizontally */
+  align-items: center;  
+  gap:16px;
+  text-align: center;
+  padding: 12px;
+  font-size: 1em;
+}
+
+.landing-link a {
+  color: #333;
+  font-size: 18px;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.landing-link .highlight {
+  color: #f57c00;
+}
+
+/* MAIN UPLOAD SECTION */
+.stackHolderSec2.uploadImg::before,
+.uploadImg .sevenScopeSec::before {
+  display: none;
+}
+
+.stackHolderSec2.uploadImg {
+  background-color: #e2f9f0;
+  min-height: calc(100vh - 165px);
+  padding: 30px 40px;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+/* LEFT CONTENT */
+.col-left {
+  flex: 0 0 60%;
+}
+
+.title {
+  font-size: 36px;
+  margin-bottom: 16px;
+}
+
+.description {
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  padding: 10px 0;
+  margin: 10px 0;
+  line-height: 1.6;
+}
+
+.description p {
+  line-height: 28px;
+  color: #555;
+}
+
+.title span:first-child {
+  color: #f57c00;
+}
+
+.title span:last-child {
+  color: #388e3c;
+}
+
+/* IMAGE + VIEW BOX */
+.uploadImage {
+  background: #fff;
+  border-radius: 10px;
+  padding: 10px;
+  display: inline-block;
+}
+
+.uploadImage img {
+  width: 330px;
+  height: 265px;
+  object-fit: cover;
+  display: block;
+}
+
+.uplodedImages {
+
+  display: block;
+
+  vertical-align: top;
+
+  background: #fff;
+
+  border-radius: 20px;
+
+  padding: 10px 15px 20px;
+
+  margin-left: 10px;
+
+  border: 1px solid rgba(0, 0, 0, 0.175);
+
+  max-width: 240px;
+
+  margin-top: 17px;
+
+}
+
+.uplodedImages p {
+  border-bottom: 2px solid #f57c00;
+  padding-bottom: 4px;
+  margin-bottom: 8px;
+  padding-left: 25px;
+}
+
+.button.orange {
+  background: linear-gradient(to right, #f29620, #f29620) !important;
+  color: #fff;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-left: 27px;
+}
+.button.green {
+  background: linear-gradient(to right, #388e3c, #388e3c) !important;
+  color: #fff;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-left: 27px;
+}
+
+/* RIGHT FORM */
+.col-right {
+  flex: 0 0 35%;
+}
+
+.form-container {
+  background: #fff;
+  border-radius: 16px;
+  padding: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.studentName {
+  width: 10px;
+}
+
+.form-container h2 {
+  color: #f57c00;
+  text-align: center;
+  margin-bottom: 16px;
+  font-size: 1.2em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.form-container label {
+  font-size: 14px;
+  display: block;
+}
+
+.form-container input {
+  width: 100%;
+  height: 38px;
+  padding: 0 10px;
+  border: 1px solid #bed835;
+  border-radius: 8px;
+  margin-top: 6px;
+}
+
+.form-container select {
+  width: 100%;
+  height: 38px;
+  padding: 0 10px;
+  border: 1px solid #bed835;
+  border-radius: 8px;
+  margin-top: 6px;
+}
+
+.form-container button {
+  margin-top: 15px;
+  padding: 10px;
+  background: #2e7d32;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1em;
+  display: inline-block;
+}
+
+/* STATS CIRCLES */
+.sevenScopeSec {
+  margin-top: 40px;
+}
+
+.sevenScopeBox ul {
+  list-style: none;
+  display: flex;
+  justify-content: space-evenly;
+  padding: 0;
+}
+
+.sevenScopeBox li {
+  width: 32%;
+  text-align: center;
+}
+
+.themeUploaded {
+  border: 2px solid #f29620;
+  background: #fff;
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.themeUploaded img {
+  width: 60px;
+  height: 60px;
+}
+
+.uploadedtitled {
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.themeBoxCnt {
+  margin-top: 4px;
+  font-weight: normal;
+  color: #212121;
+  line-height: 1.2;
+}
+.bordered{
+  min-height: calc(100vh - 193px);
+}
+.bordered.otherLanguage .sideImageLeft img {
+  max-height: 401px;
+}
+.bordered.otherLanguage .sideImage img {
+  max-height: 401px;
+}
+
+.bordered.otherLanguage .prakriti img {
+  height: 90px;
+}
+.bordered.otherLanguage .bordered h1 span {
+  margin-top: 10px;
+  line-height: 50px;
+}
+.bordered.otherLanguage .maxwidth{
+      margin-top: 100px;
+}
+
+@media only screen and (min-width: 768px) and (max-width: 1024px) {
+  .themeUploaded {
+    width: 80px;
+    height: 80px;
+  }
+   .media-slider {
+
+    position: relative;
+
+    width: 100%;
+
+    max-width: 100%;
+
+    margin: 12px 0;
+
+}
+
+  .uploadedtitled {
+    font-size: 26px;
+  }
+
+  .uploadImage {
+    margin-right: 15px;
+  }
+  .col-left {
+    flex: 0 0 100%;
+  }
+  .col-right {
+    flex: 0 0 100%;
+  }
+  .header img {
+    height: 40px;
+  }
+  .title {
+    font-size: 28px;
+    margin-bottom: 16px;
+  }
+  div[style="width: 33%; text-align: end"]{
+        width: 213px!important;
+  }
+  img[height="100"]{
+        height: 70px!important;
+  }
+  img[alt="Eco-Clubs Logo"]{
+        height: 60px;
+  }
+}
+.media-thumb {
+
+  width: 100%;
+
+  max-width: 330px;                 /* cap at your original width */
+
+  aspect-ratio: 330 / 265;          /* keep the same shape */
+
+  height: auto;                     /* height driven by aspect-ratio */
+
+  object-fit: cover;                /* crop nicely */
+
+  display: block;
+
+  border-radius: 8px;
+
+  margin: 0 auto;                   /* center on small screens */
+
+}
+
+@media only screen and (max-width: 767px) {
+  .col-left {
+    flex: 0 0 100%;
+  }
+  .media-slider {
+
+    position: relative;
+
+    width: 100%;
+
+    max-width: 100%;
+
+    margin: 12px 0;
+
+}
+
+.media-thumb {
+
+    margin-right: 0;
+
+  }
+
+  .col-right {
+    flex: 0 0 100%;
+  }
+
+  .flexWrap {
+    flex-flow: wrap;
+  }
+
+  .stackHolderSec2.uploadImg {
+    padding: 30px 10px;
+  }
+
+  .uploadImage img {
+    width: 100%;
+  }
+
+  .themeUploaded {
+    width: 70px;
+    height: 70px;
+  }
+
+  .uploadedtitled {
+    font-size: 24px;
+    font-weight: bold;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .header {
+    gap: 3px;
+    flex-flow: wrap;
+    padding: 3px 15px;
+  }
+
+  .header a img {
+    display: none;
+  }
+
+  .header a:nth-child(1) img {
+    display: block !important
+  }
+
+  .uploadImage {
+    margin-bottom: 20px;
+    width: 100%;
+  }
+
+  .col {
+    flex: 0 0 100% !important;
+  }
+
+  .bordered {
+    min-width: 900px;
+    
+  }
+
+  #cert-root {
+    overflow-x: auto;
+  }
+
+  .text-center.mt-4 button {
+    font-size: 14px;
+    padding: 6px 5px;
+  }
+  .maxwidth {
+    max-width: 810px;
+    margin: auto;
+  }
+  .bordered{transform: scale(0.40);transform-origin: top left; /* or center, based on your layout */
+  display: inline-block;}
+ 
+  .language-selector{
+    top: 106px;
+  }
+}

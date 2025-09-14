@@ -223,7 +223,7 @@ class WeatherApp {
         });
 
         // Update hourly list with selected day data
-        this.hourlyList.innerHTML = dayHours.slice(0, 8).map((time, index) => {
+        this.hourlyList.innerHTML = dayHours.slice(0, 10).map((time, index) => {
             const hour = new Date(time).getHours();
             const formattedTime = this.formatHour(hour);
             const temp = dayTemps[index];
@@ -231,8 +231,10 @@ class WeatherApp {
 
             return `
                 <div class="hourly-item">
+                    <div class="Flex">
                     <div class="hourly-time">${formattedTime}</div>
                     <img src="${this.getWeatherIcon(weatherCode)}" alt="${this.getWeatherDescription(weatherCode)}" class="hourly-icon">
+                   </div>
                     <div class="hourly-temp">${this.formatTemperature(temp)}</div>
                 </div>
             `;
@@ -503,9 +505,10 @@ class WeatherApp {
 
             return `
                 <div class="hourly-item">
+                 <div class="Flex">
                     <div class="hourly-time">${formattedTime}</div>
                     <img src="${this.getWeatherIcon(weatherCode)}" alt="${this.getWeatherDescription(weatherCode)}" class="hourly-icon">
-                    <div class="hourly-temp">${this.formatTemperature(temp)}</div>
+                   </div>  <div class="hourly-temp">${this.formatTemperature(temp)}</div>
                 </div>
             `;
         }).join('');
