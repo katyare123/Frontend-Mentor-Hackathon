@@ -16,7 +16,7 @@
         integrity="sha384-tViUnnbYAV00FLIhhi3v/dWt3Jxw4gZQcNoSCxCIFNJVCx7/D55/wXsrNIRANwdD" crossorigin="anonymous">
 </head>
 
-<body class="imperial dark">
+<body class="metric dark">
     <div class="loader" id="loader" style="display: none ;"></div>
     <!-- <img  class="Uicupy" src="./design/image.png" alt="" srcset=""> -->
     <div class="app">
@@ -91,6 +91,7 @@
 
         <!-- Main Content -->
         <main class="main">
+            <div class="cl">
             <div class="main-h1-center">
                 <h1 class="main-title" id="title"></h1>
             </div>
@@ -104,15 +105,16 @@
                     </div>
                     <button class="search-btn" id="searchBtn">Search</button>
                 </div>
+                <div class="results" id="results">
                 <div class="search-status" id="searchStatus"></div>
                 <div class="search-results" id="searchResults"></div>
             </div>
-
+</div>
             <!-- Weather Content -->
             <div class="weather-content" id="weatherContent">
-                <div class="flexc">
+                <div class="flex-row">
                     <!-- Current Weather Card -->
-                    <div class="flexrow">
+                    <div class="flex-column">
                         <div class="current-weather-card">
                             <div class="weather-info">
                                 <div class="location-info">
@@ -193,7 +195,8 @@
         </main>
     </div>
 
-    <script src="script.js"></script>
+    <script type="module" src="./main.js"></script>
+    <script type="module" src="./script.js"></script>
 </body>
 
 </html>

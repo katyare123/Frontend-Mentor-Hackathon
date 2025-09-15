@@ -15,6 +15,8 @@ class WeatherApp {
         this.loadDefaultWeather();
         this.themeToggle = document.querySelector('.theme-toggle');
         this.themeToggle.addEventListener('click', () => this.toggleTheme());
+        this.results = document.getElementById('results');
+
 
     }
 
@@ -301,6 +303,7 @@ class WeatherApp {
     }
 
     async handleSearch() {
+
         const query = this.searchInput.value.trim();
         if (!query) return;
 
@@ -365,7 +368,7 @@ class WeatherApp {
 
     displaySearchResults(results) {
         this.searchStatus.textContent = '';
-        this.searchStatus.className = 'search-status';
+        this.searchStatus.className = 'search-status active';
 
         if (results.length === 0) {
             this.searchResults.innerHTML = '<div class="search-result-item">No search result found!</div>';
@@ -395,6 +398,7 @@ class WeatherApp {
         this.searchResults.innerHTML = '';
         this.searchStatus.textContent = '';
         this.searchStatus.className = 'search-status';
+        // this.results.style.display='none';
     }
 
     showSearchError() {
@@ -434,7 +438,7 @@ class WeatherApp {
         }
 
         const data = await response.json();
-
+        console.log('Weather API response:', data);
         return {
             current: data.current,
             hourly: data.hourly,
@@ -610,13 +614,13 @@ class WeatherApp {
     showLoading() {
         this.weatherContent.style.display = 'none';
         this.errorState.style.display = 'none';
-        this.loadingState.style.display = 'block';
+        this.loadingState.style.display = 'flex';
         this.loader.style.display = 'flex';
     }
 
     hideLoading() {
         this.loadingState.style.display = 'none';
-        this.weatherContent.style.display = 'block';
+        this.weatherContent.style.display = 'flex';
         this.loader.style.display = 'none';
 
     }
@@ -624,8 +628,8 @@ class WeatherApp {
     showError() {
         this.weatherContent.style.display = 'none';
         this.loadingState.style.display = 'none';
-        this.errorState.style.display = 'block';
-                this.loader.style.display='none';
+        this.errorState.style.display = 'flex';
+        this.loader.style.display = 'none';
 
     }
 
@@ -641,8 +645,8 @@ class WeatherApp {
         // Show location loading
         this.searchStatus.textContent = "Detecting location...";
         this.searchStatus.className = "search-status search-in-progress";
-        this.currentLocation='Loading';
-        this.loader.style.display='flex';
+        this.currentLocation = 'Loading';
+        this.loader.style.display = 'flex';
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(async (position) => {
                 const latitude = position.coords.latitude;
@@ -724,7 +728,7 @@ class WeatherApp {
         if (document.body.classList.contains('dark')) {
             document.body.classList.remove('dark');
             document.body.classList.add('light');
-            this.themeToggle.classList= "theme-toggle bi bi-moon-fill";
+            this.themeToggle.classList = "theme-toggle bi bi-moon-fill";
         } else {
             document.body.classList.remove('light');
             document.body.classList.add('dark');
