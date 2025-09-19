@@ -45,14 +45,33 @@ class WeatherApp {
         this.dailyCards = document.getElementById('dailyCards');
         this.hourlyList = document.getElementById('hourlyList');
         this.selectedDay = document.getElementById('selectedDay');
-
+        this.clearresults = document.getElementById('clear-results');
         // State elements
         this.errorState = document.getElementById('errorState');
         // this.loadingState = document.getElementById('loadingState');
         this.retryBtn = document.getElementById('retryBtn');
         this.loader = document.getElementById('loader');
         this.weatherContentdummy = document.getElementById('weatherContentdummy');
-        this.searchcontainer= document.getElementById('search-section')
+        this.searchcontainer = document.getElementById('search-section')
+        // Charts & Visuals
+        this.tempChartEl = document.getElementById('tempChart');
+        this.precipChartEl = document.getElementById('precipChart');
+        this.windNeedle = document.getElementById('windNeedle');
+        this.windDirText = document.getElementById('windDirText');
+        // Share
+        this.shareCardBtn = document.getElementById('shareCardBtn');
+        this.shareNativeBtn = document.getElementById('shareNativeBtn');
+        // Alerts
+        this.alertTempInput = document.getElementById('alertTempInput');
+        this.alertWindInput = document.getElementById('alertWindInput');
+        this.saveAlertsBtn = document.getElementById('saveAlertsBtn');
+        this.enablePushBtn = document.getElementById('enablePushBtn');
+        // Chat
+        this.chatBox = document.getElementById('chatBox');
+        this.chatInput = document.getElementById('chatInput');
+        this.sendBtn = document.getElementById('sendBtn');
+        this.micBtn = document.getElementById('micBtn');
+        this.ttsToggleBtn = document.getElementById('ttsToggleBtn');
     }
 
     bindEvents() {
@@ -79,7 +98,14 @@ class WeatherApp {
                 this.searchInput.blur();
             }
         });
-
+        this.clearresults.addEventListener('click', () => {
+            this.clearSearchResults();
+            this.searchInput.blur();
+            this.searchInput.value = '';
+            if(this.weatherContent.style.display='none'){
+                this.weatherContent.style.display='flex';
+            }
+        })
         // Retry button
         this.retryBtn.addEventListener('click', () => this.retry());
 
@@ -96,6 +122,17 @@ class WeatherApp {
                 this.closeDaySelector();
             }
         });
+        // Share actions
+        if(this.shareCardBtn){ this.shareCardBtn.addEventListener('click', () => this.captureShareCard()); }
+        if(this.shareNativeBtn){ this.shareNativeBtn.addEventListener('click', () => this.nativeShare()); }
+        // Alerts
+        if(this.saveAlertsBtn){ this.saveAlertsBtn.addEventListener('click', () => this.saveUserAlerts()); }
+        if(this.enablePushBtn){ this.enablePushBtn.addEventListener('click', () => this.enablePushNotifications()); }
+        // Chat
+        if(this.sendBtn){ this.sendBtn.addEventListener('click', () => this.handleChatSend()); }
+        if(this.chatInput){ this.chatInput.addEventListener('keypress', (e)=>{ if(e.key==='Enter') this.handleChatSend(); }); }
+        if(this.micBtn){ this.micBtn.addEventListener('click', () => this.toggleVoiceInput()); }
+        if(this.ttsToggleBtn){ this.ttsToggleBtn.addEventListener('click', () => this.toggleTTS()); }
     }
 
     toggleUnitsMenu() {
@@ -157,39 +194,39 @@ class WeatherApp {
             this.dayBtn.setAttribute('aria-expanded', 'true');
         }
     }
- 
 
-  createDaySelectorMenu() {
-    this.daySelectorMenu = document.createElement('div');
-    this.daySelectorMenu.className = 'day-selector-menu';
 
-    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const today = new Date().getDay(); // 0 = Sunday
+    createDaySelectorMenu() {
+        this.daySelectorMenu = document.createElement('div');
+        this.daySelectorMenu.className = 'day-selector-menu';
 
-    days.forEach((day, index) => {
-        const dayOption = document.createElement('button');
-        dayOption.className = 'day-option';
-        dayOption.textContent = day;
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const today = new Date().getDay(); // 0 = Sunday
 
-        if (index === today) {
-            dayOption.classList.add('active');
-        }
+        days.forEach((day, index) => {
+            const dayOption = document.createElement('button');
+            dayOption.className = 'day-option';
+            dayOption.textContent = day;
 
-        dayOption.addEventListener('click', () => {
-            this.selectDay(day, index);
-            this.daySelectorMenu.classList.remove('show');
-            this.dayBtn.setAttribute('aria-expanded', 'false');
+            if (index === today) {
+                dayOption.classList.add('active');
+            }
+
+            dayOption.addEventListener('click', () => {
+                this.selectDay(day, index);
+                this.daySelectorMenu.classList.remove('show');
+                this.dayBtn.setAttribute('aria-expanded', 'false');
+            });
+
+            this.daySelectorMenu.appendChild(dayOption);
         });
 
-        this.daySelectorMenu.appendChild(dayOption);
-    });
 
-    
-    this.selectedDay.textContent = days[today];
+        this.selectedDay.textContent = days[today];
 
-    // Insert after the day selector button
-    this.dayBtn.parentNode.insertBefore(this.daySelectorMenu, this.dayBtn.nextSibling);
-}
+        // Insert after the day selector button
+        this.dayBtn.parentNode.insertBefore(this.daySelectorMenu, this.dayBtn.nextSibling);
+    }
 
 
     selectDay(dayName, dayIndex) {
@@ -378,8 +415,12 @@ class WeatherApp {
         this.searchStatus.className = 'search-status active';
 
         if (results.length === 0) {
-            this.searchResults.innerHTML = '<div class="search-result-item">No search result found!</div>';
+            this.searchResults.innerHTML = '<div class="search-result-item deactive">No search result found!</div>';
+            this.weatherContent.style.display = 'none';
             return;
+        } else {
+            this.weatherContent.style.display = 'flex';
+
         }
 
         this.searchResults.innerHTML = results.map(result =>
@@ -437,8 +478,8 @@ class WeatherApp {
     async fetchWeatherData(location) {
         const { latitude, longitude } = location;
 
-        // Fetch current weather and forecast
-        const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=7`);
+        // Fetch current weather and forecast (+ wind direction, hourly precipitation)
+        const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,wind_direction_10m&hourly=temperature_2m,weather_code,precipitation,wind_direction_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=7`);
 
         if (!response.ok) {
             throw new Error('Weather API error');
@@ -466,11 +507,18 @@ class WeatherApp {
         this.feelsLike.textContent = this.formatTemperature(current.apparent_temperature);
         this.humidity.textContent = `${current.relative_humidity_2m}%`;
         this.wind.textContent = this.formatWindSpeed(current.wind_speed_10m);
+        if(this.windNeedle && typeof current.wind_direction_10m === 'number'){
+            this.windNeedle.style.transform = `rotate(${current.wind_direction_10m}deg)`;
+            this.windDirText.textContent = `${Math.round(current.wind_direction_10m)}°`;
+        }
         this.precipitation.textContent = this.formatPrecipitation(current.precipitation);
 
         // Update weather icon
         this.weatherIcon.src = this.getWeatherIcon(current.weather_code);
         this.weatherIcon.alt = this.getWeatherDescription(current.weather_code);
+
+        // Update charts
+        this.updateCharts(hourly);
 
         // Update daily forecast
         this.updateDailyForecast(daily);
@@ -523,6 +571,27 @@ class WeatherApp {
                 </div>
             `;
         }).join('');
+    }
+    
+    updateCharts(hourly){
+        if(!window.Chart || !this.tempChartEl || !this.precipChartEl) return;
+        const labels = hourly.time.slice(0, 24).map(t => new Date(t).getHours()).map(h => this.formatHour(h));
+        const temps = hourly.temperature_2m.slice(0, 24).map(v => Math.round(v));
+        const precip = (hourly.precipitation || []).slice(0, 24).map(v => Number(v?.toFixed ? v.toFixed(2) : v));
+
+        if(this.tempChart){ this.tempChart.destroy(); }
+        this.tempChart = new Chart(this.tempChartEl, {
+            type: 'line',
+            data: { labels, datasets: [{ label: 'Temp (°C)', data: temps, borderColor: '#4e79a7', backgroundColor: 'rgba(78,121,167,0.2)', tension: 0.35, fill: true, pointRadius: 2 }] },
+            options: { responsive: true, scales: { y: { beginAtZero: false } }, plugins: { legend: { display: true } } }
+        });
+
+        if(this.precipChart){ this.precipChart.destroy(); }
+        this.precipChart = new Chart(this.precipChartEl, {
+            type: 'bar',
+            data: { labels, datasets: [{ label: 'Precip (mm)', data: precip, backgroundColor: '#59a14f' }] },
+            options: { responsive: true, scales: { y: { beginAtZero: true } }, plugins: { legend: { display: true } } }
+        });
     }
 
     formatTemperature(temp) {
@@ -623,20 +692,20 @@ class WeatherApp {
         this.errorState.style.display = 'none';
         // this.loadingState.style.display = 'flex';
         this.loader.style.display = 'flex';
-        this.weatherContentdummy.style.display='flex';
+        this.weatherContentdummy.style.display = 'flex';
     }
 
     hideLoading() {
         // this.loadingState.style.display = 'none';
         this.weatherContent.style.display = 'flex';
         this.loader.style.display = 'none';
-        this.weatherContentdummy.style.display='none';
+        this.weatherContentdummy.style.display = 'none';
 
     }
 
     showError() {
         this.weatherContent.style.display = 'none';
-        this.searchcontainer.style.display='none';
+        this.searchcontainer.style.display = 'none';
         // this.loadingState.style.display = 'none';
         this.errorState.style.display = 'flex';
         this.loader.style.display = 'none';
@@ -646,7 +715,7 @@ class WeatherApp {
     retry() {
         if (this.currentLocation) {
             this.loadWeatherData(this.currentLocation);
-        this.searchcontainer.style.display='flex';
+            this.searchcontainer.style.display = 'flex';
         } else {
             this.loadDefaultWeather();
         }
@@ -770,7 +839,192 @@ type()
 // Delay before typing starts (wait for fade up animation)
 function makeunit() {
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const today = new Date().getDay(); 
-        document.getElementById('selectedDay').textContent = days[today];
+    const today = new Date().getDay();
+    document.getElementById('selectedDay').textContent = days[today];
 }
 makeunit()
+
+
+
+
+// ------------ Notifications & Alerts ---------------
+WeatherApp.prototype.saveUserAlerts = function(){
+    const temp = parseFloat(this.alertTempInput?.value);
+    const wind = parseFloat(this.alertWindInput?.value);
+    const alerts = { temp: isNaN(temp)?null:temp, wind: isNaN(wind)?null:wind };
+    localStorage.setItem('userAlerts', JSON.stringify(alerts));
+    alert('Alerts saved');
+    this.checkSevereAlerts();
+};
+
+WeatherApp.prototype.enablePushNotifications = async function(){
+    if(!('Notification' in window)) { alert('Notifications not supported.'); return; }
+    const perm = await Notification.requestPermission();
+    if(perm !== 'granted'){ alert('Permission not granted'); return; }
+    new Notification('Push notifications enabled for Weather Now');
+};
+
+WeatherApp.prototype.checkSevereAlerts = function(){
+    if(!this.weatherData) return;
+    const { current } = this.weatherData;
+    const alerts = JSON.parse(localStorage.getItem('userAlerts') || '{}');
+    const trigger = (msg) => {
+        this.showAlertPopup(msg);
+        if(Notification.permission === 'granted') new Notification(msg);
+    };
+    if(current.weather_code >= 95) trigger('Severe thunderstorm alert');
+    if(current.wind_speed_10m >= 20) trigger('High wind alert');
+    if(current.temperature_2m >= 40) trigger('Extreme heat alert');
+    if(current.precipitation >= 30) trigger('Flooding risk: very heavy rain');
+    if(alerts.temp != null && current.temperature_2m >= alerts.temp) trigger(`Custom alert: Temp ≥ ${alerts.temp}°C`);
+    if(alerts.wind != null && current.wind_speed_10m >= alerts.wind) trigger(`Custom alert: Wind ≥ ${alerts.wind} km/h`);
+};
+
+WeatherApp.prototype.showAlertPopup = function(message){
+    const div = document.createElement('div');
+    div.className = 'toast-alert';
+    div.textContent = message;
+    document.body.appendChild(div);
+    setTimeout(()=>{ div.classList.add('show'); }, 10);
+    setTimeout(()=>{ div.classList.remove('show'); div.remove(); }, 4000);
+};
+
+const _displayWeatherData = WeatherApp.prototype.displayWeatherData;
+WeatherApp.prototype.displayWeatherData = function(data){
+    _displayWeatherData.call(this, data);
+    this.checkSevereAlerts();
+};
+
+const style = document.createElement('style');
+style.textContent = `.toast-alert{position:fixed;right:12px;bottom:12px;background:#1f2937;color:#fff;border:1px solid #374151;padding:10px 12px;border-radius:8px;opacity:0;transform:translateY(10px);transition:all .3s;z-index:9999}.toast-alert.show{opacity:1;transform:translateY(0)}`;
+document.head.appendChild(style);
+
+// --------------- Sharing ----------------
+WeatherApp.prototype.captureShareCard = async function(){
+    if(!window.html2canvas){ alert('Sharing lib not loaded'); return; }
+    const node = document.querySelector('.current-weather-card');
+    if(!node) return;
+    const canvas = await html2canvas(node, { scale: 2, backgroundColor: null });
+    const url = canvas.toDataURL('image/png');
+    const link = document.createElement('a');
+    link.href = url; link.download = `forecast-${Date.now()}.png`; link.click();
+};
+
+WeatherApp.prototype.nativeShare = async function(){
+    const text = `Weather in ${this.currentLocation?.name || ''}: ${this.temperature?.textContent || ''}, wind ${this.wind?.textContent || ''}.`;
+    if(navigator.share){
+        try{ await navigator.share({ title: 'Weather Now', text, url: location.href }); }catch(e){}
+    } else {
+        const msg = encodeURIComponent(text + ' ' + location.href);
+    }
+};
+
+// --------------- AI Assistant ----------------
+WeatherApp.prototype.toggleTTS = function(){
+    const btn = this.ttsToggleBtn;
+    const pressed = btn?.getAttribute('aria-pressed') === 'true';
+    if(!btn) return;
+    btn.setAttribute('aria-pressed', String(!pressed));
+};
+
+WeatherApp.prototype.appendChat = function(role, text){
+    if(!this.chatBox) return;
+    const line = document.createElement('div');
+    line.className = `chat-line ${role}`;
+    line.textContent = text;
+    this.chatBox.appendChild(line);
+    this.chatBox.scrollTop = this.chatBox.scrollHeight;
+};
+
+WeatherApp.prototype.handleChatSend = async function(){
+    const q = (this.chatInput?.value || '').trim();
+    if(!q) return;
+    this.appendChat('user', q);
+    this.chatInput.value = '';
+
+    const c = this.weatherData?.current || {};
+    const ctx = `CURRENT_OBS: temp=${c.temperature_2m ?? '-'}C, wind=${c.wind_speed_10m ?? '-'}m/s, precip=${c.precipitation ?? '-'}mm, code=${c.weather_code ?? '-'}`;
+
+    const apiKey = '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';
+    if(!apiKey){
+        const msg = 'AI disabled: missing OpenRouter key (set VITE_OPENROUTER_KEY).';
+        this.appendChat('assistant', msg);
+        return;
+    }
+
+    const sys = 'You are a concise weather assistant. Answer using provided CURRENT_OBS context and general weather knowledge. Do not fabricate data or call external APIs yourself.';
+    const payload = {
+        model: 'deepseek/deepseek-chat-v3.1:free',
+        messages: [
+            { role: 'system', content: sys },
+            { role: 'user', content: `${ctx}\n\n${q}` }
+        ],
+        stream: true
+    };
+
+    try{
+        const resp = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`,
+                'HTTP-Referer': location.origin,
+                'X-Title': 'Weather Now'
+            },
+            body: JSON.stringify(payload)
+        });
+        if(!resp.ok){ throw new Error('AI request failed'); }
+
+        const reader = resp.body.getReader();
+        const decoder = new TextDecoder();
+        let acc = '';
+        let spokenOnce = false;
+        this.appendChat('assistant', '');
+        const last = this.chatBox.lastElementChild;
+        while(true){
+            const { done, value } = await reader.read();
+            if(done) break;
+            const chunk = decoder.decode(value, { stream: true });
+            chunk.split('\n').forEach(line => {
+                const m = line.match(/^data: (.*)$/);
+                if(!m) return;
+                if(m[1] === '[DONE]') return;
+                try{
+                    const data = JSON.parse(m[1]);
+                    const delta = data.choices?.[0]?.delta?.content || '';
+                    if(delta){
+                        acc += delta;
+                        last.textContent = acc;
+                        if(this.ttsToggleBtn?.getAttribute('aria-pressed') === 'true' && !spokenOnce && acc.length > 120){
+                            speechSynthesis.cancel();
+                            speechSynthesis.speak(new SpeechSynthesisUtterance(acc));
+                            spokenOnce = true;
+                        }
+                    }
+                }catch(e){}
+            });
+        }
+        if(this.ttsToggleBtn?.getAttribute('aria-pressed') === 'true' && !spokenOnce){
+            speechSynthesis.cancel();
+            speechSynthesis.speak(new SpeechSynthesisUtterance(acc));
+        }
+    }catch(err){
+        this.appendChat('assistant', 'Sorry, I could not reach the AI service.');
+    }
+};
+
+WeatherApp.prototype.toggleVoiceInput = function(){
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if(!SR){ alert('Voice input not supported in this browser.'); return; }
+    const rec = new SR();
+    rec.lang = 'en-US';
+    rec.interimResults = false;
+    rec.maxAlternatives = 1;
+    rec.onresult = (e)=>{
+        const t = e.results[0][0].transcript;
+        this.chatInput.value = t;
+        this.handleChatSend();
+    };
+    rec.onerror = ()=>{};
+    rec.start();
+};
