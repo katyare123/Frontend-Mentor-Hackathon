@@ -102,8 +102,8 @@ class WeatherApp {
             this.clearSearchResults();
             this.searchInput.blur();
             this.searchInput.value = '';
-            if(this.weatherContent.style.display='none'){
-                this.weatherContent.style.display='flex';
+            if (this.weatherContent.style.display = 'none') {
+                this.weatherContent.style.display = 'flex';
             }
         })
         // Retry button
@@ -123,16 +123,16 @@ class WeatherApp {
             }
         });
         // Share actions
-        if(this.shareCardBtn){ this.shareCardBtn.addEventListener('click', () => this.captureShareCard()); }
-        if(this.shareNativeBtn){ this.shareNativeBtn.addEventListener('click', () => this.nativeShare()); }
+        if (this.shareCardBtn) { this.shareCardBtn.addEventListener('click', () => this.captureShareCard()); }
+        if (this.shareNativeBtn) { this.shareNativeBtn.addEventListener('click', () => this.nativeShare()); }
         // Alerts
-        if(this.saveAlertsBtn){ this.saveAlertsBtn.addEventListener('click', () => this.saveUserAlerts()); }
-        if(this.enablePushBtn){ this.enablePushBtn.addEventListener('click', () => this.enablePushNotifications()); }
+        if (this.saveAlertsBtn) { this.saveAlertsBtn.addEventListener('click', () => this.saveUserAlerts()); }
+        if (this.enablePushBtn) { this.enablePushBtn.addEventListener('click', () => this.enablePushNotifications()); }
         // Chat
-        if(this.sendBtn){ this.sendBtn.addEventListener('click', () => this.handleChatSend()); }
-        if(this.chatInput){ this.chatInput.addEventListener('keypress', (e)=>{ if(e.key==='Enter') this.handleChatSend(); }); }
-        if(this.micBtn){ this.micBtn.addEventListener('click', () => this.toggleVoiceInput()); }
-        if(this.ttsToggleBtn){ this.ttsToggleBtn.addEventListener('click', () => this.toggleTTS()); }
+        if (this.sendBtn) { this.sendBtn.addEventListener('click', () => this.handleChatSend()); }
+        if (this.chatInput) { this.chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') this.handleChatSend(); }); }
+        if (this.micBtn) { this.micBtn.addEventListener('click', () => this.toggleVoiceInput()); }
+        if (this.ttsToggleBtn) { this.ttsToggleBtn.addEventListener('click', () => this.toggleTTS()); }
     }
 
     toggleUnitsMenu() {
@@ -507,7 +507,7 @@ class WeatherApp {
         this.feelsLike.textContent = this.formatTemperature(current.apparent_temperature);
         this.humidity.textContent = `${current.relative_humidity_2m}%`;
         this.wind.textContent = this.formatWindSpeed(current.wind_speed_10m);
-        if(this.windNeedle && typeof current.wind_direction_10m === 'number'){
+        if (this.windNeedle && typeof current.wind_direction_10m === 'number') {
             this.windNeedle.style.transform = `rotate(${current.wind_direction_10m}deg)`;
             this.windDirText.textContent = `${Math.round(current.wind_direction_10m)}°`;
         }
@@ -572,21 +572,21 @@ class WeatherApp {
             `;
         }).join('');
     }
-    
-    updateCharts(hourly){
-        if(!window.Chart || !this.tempChartEl || !this.precipChartEl) return;
+
+    updateCharts(hourly) {
+        if (!window.Chart || !this.tempChartEl || !this.precipChartEl) return;
         const labels = hourly.time.slice(0, 24).map(t => new Date(t).getHours()).map(h => this.formatHour(h));
         const temps = hourly.temperature_2m.slice(0, 24).map(v => Math.round(v));
         const precip = (hourly.precipitation || []).slice(0, 24).map(v => Number(v?.toFixed ? v.toFixed(2) : v));
 
-        if(this.tempChart){ this.tempChart.destroy(); }
+        if (this.tempChart) { this.tempChart.destroy(); }
         this.tempChart = new Chart(this.tempChartEl, {
             type: 'line',
             data: { labels, datasets: [{ label: 'Temp (°C)', data: temps, borderColor: '#4e79a7', backgroundColor: 'rgba(78,121,167,0.2)', tension: 0.35, fill: true, pointRadius: 2 }] },
             options: { responsive: true, scales: { y: { beginAtZero: false } }, plugins: { legend: { display: true } } }
         });
 
-        if(this.precipChart){ this.precipChart.destroy(); }
+        if (this.precipChart) { this.precipChart.destroy(); }
         this.precipChart = new Chart(this.precipChartEl, {
             type: 'bar',
             data: { labels, datasets: [{ label: 'Precip (mm)', data: precip, backgroundColor: '#59a14f' }] },
@@ -721,87 +721,58 @@ class WeatherApp {
         }
     }
 
-    async loadDefaultWeather() {
-        // Show location loading
-        this.searchInput.textContent = "Detecting location...";
-        this.searchStatus.className = "search-status search-in-progress";
-        this.currentLocation = 'Loading';
-        this.loader.style.display = 'flex';
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(async (position) => {
-                const latitude = position.coords.latitude;
-                const longitude = position.coords.longitude;
+   async loadDefaultWeather() {
+    this.searchInput.textContent = "Detecting location...";
+    this.searchStatus.className = "search-status search-in-progress";
+    this.currentLocation = 'Loading';
+    this.loader.style.display = 'flex';
 
-                try {
-                    // Reverse geocoding (city name only)
-                    const response = await fetch(
-                        `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
-                    );
-                    const data = await response.json();
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(async (position) => {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
 
-                    const address = data.address;
+            try {
+                // LocationIQ reverse geocoding
+                const response = await fetch(
+                  `https://us1.locationiq.com/v1/reverse?key=${'pk.0c5d0a05ee8808f6c5226c1c0e896159'}&lat=${latitude}&lon=${longitude}&format=json`
+                );
+                const data = await response.json();
 
-                    // village / town / city priority
-                    let placeName = address.village || address.town || address.city || address.hamlet || "Unknown";
+                // LocationIQ puts the city/town in 'address'
+                const address = data.address || {};
+                let placeName = address.village || address.town || address.city || address.hamlet || "Current Location";
+                const locationName = `${placeName}, ${address.country || ""}`;
 
-                    // Final name with country
-                    const locationName = `${placeName}, ${address.country || ""}`;
-
-                    const userLocation = {
-                        latitude: latitude,
-                        longitude: longitude,
-                        name: locationName
-                    };
-
-
-                    // Update UI
-                    this.currentLocation = userLocation;
-                    this.searchInput.value = userLocation.name;
-
-                    // Hide location loading
-                    this.clearSearchResults();
-
-                    // Load weather data
-                    this.loadWeatherData(userLocation);
-
-                } catch (err) {
-                    console.error("Reverse geocoding failed:", err);
-                    this.clearSearchResults();
-
-                    const defaultLocation = {
-                        latitude: 52.52,
-                        longitude: 13.405,
-                        name: "Berlin"
-                    };
-                    this.currentLocation = defaultLocation;
-                    this.searchInput.value = defaultLocation.name;
-                    this.loadWeatherData(defaultLocation);
-                }
-            }, (error) => {
-                console.error("Geolocation error:", error);
-                this.clearSearchResults();
-
-                const defaultLocation = {
-                    latitude: 52.52,
-                    longitude: 13.405,
-                    name: "Berlin"
+                const userLocation = {
+                    latitude,
+                    longitude,
+                    name: locationName
                 };
-                this.currentLocation = defaultLocation;
-                this.searchInput.value = defaultLocation.name;
-                this.loadWeatherData(defaultLocation);
-            });
-        } else {
-            console.log("Geolocation not supported. Loading Berlin...");
-            const defaultLocation = {
-                latitude: 52.52,
-                longitude: 13.405,
-                name: "Berlin"
-            };
-            this.currentLocation = defaultLocation;
-            this.searchInput.value = defaultLocation.name;
-            this.loadWeatherData(defaultLocation);
-        }
+
+                this.currentLocation = userLocation;
+                this.searchInput.value = userLocation.name;
+                this.clearSearchResults();
+                this.loadWeatherData(userLocation);
+
+            } catch (err) {
+                console.error("Reverse geocoding failed:", err);
+                this.clearSearchResults();
+                this.fallbackToBerlin();
+            }
+        }, () => this.fallbackToBerlin());
+    } else {
+        this.fallbackToBerlin();
     }
+}
+
+fallbackToBerlin() {
+    const defaultLocation = { latitude: 52.52, longitude: 13.405, name: "Berlin" };
+    this.currentLocation = defaultLocation;
+    this.searchInput.value = defaultLocation.name;
+    this.loadWeatherData(defaultLocation);
+}
+
 
 
     toggleTheme() {
@@ -848,49 +819,49 @@ makeunit()
 
 
 // ------------ Notifications & Alerts ---------------
-WeatherApp.prototype.saveUserAlerts = function(){
+WeatherApp.prototype.saveUserAlerts = function () {
     const temp = parseFloat(this.alertTempInput?.value);
     const wind = parseFloat(this.alertWindInput?.value);
-    const alerts = { temp: isNaN(temp)?null:temp, wind: isNaN(wind)?null:wind };
+    const alerts = { temp: isNaN(temp) ? null : temp, wind: isNaN(wind) ? null : wind };
     localStorage.setItem('userAlerts', JSON.stringify(alerts));
     alert('Alerts saved');
     this.checkSevereAlerts();
 };
 
-WeatherApp.prototype.enablePushNotifications = async function(){
-    if(!('Notification' in window)) { alert('Notifications not supported.'); return; }
+WeatherApp.prototype.enablePushNotifications = async function () {
+    if (!('Notification' in window)) { alert('Notifications not supported.'); return; }
     const perm = await Notification.requestPermission();
-    if(perm !== 'granted'){ alert('Permission not granted'); return; }
+    if (perm !== 'granted') { alert('Permission not granted'); return; }
     new Notification('Push notifications enabled for Weather Now');
 };
 
-WeatherApp.prototype.checkSevereAlerts = function(){
-    if(!this.weatherData) return;
+WeatherApp.prototype.checkSevereAlerts = function () {
+    if (!this.weatherData) return;
     const { current } = this.weatherData;
     const alerts = JSON.parse(localStorage.getItem('userAlerts') || '{}');
     const trigger = (msg) => {
         this.showAlertPopup(msg);
-        if(Notification.permission === 'granted') new Notification(msg);
+        if (Notification.permission === 'granted') new Notification(msg);
     };
-    if(current.weather_code >= 95) trigger('Severe thunderstorm alert');
-    if(current.wind_speed_10m >= 20) trigger('High wind alert');
-    if(current.temperature_2m >= 40) trigger('Extreme heat alert');
-    if(current.precipitation >= 30) trigger('Flooding risk: very heavy rain');
-    if(alerts.temp != null && current.temperature_2m >= alerts.temp) trigger(`Custom alert: Temp ≥ ${alerts.temp}°C`);
-    if(alerts.wind != null && current.wind_speed_10m >= alerts.wind) trigger(`Custom alert: Wind ≥ ${alerts.wind} km/h`);
+    if (current.weather_code >= 95) trigger('Severe thunderstorm alert');
+    if (current.wind_speed_10m >= 20) trigger('High wind alert');
+    if (current.temperature_2m >= 40) trigger('Extreme heat alert');
+    if (current.precipitation >= 30) trigger('Flooding risk: very heavy rain');
+    if (alerts.temp != null && current.temperature_2m >= alerts.temp) trigger(`Custom alert: Temp ≥ ${alerts.temp}°C`);
+    if (alerts.wind != null && current.wind_speed_10m >= alerts.wind) trigger(`Custom alert: Wind ≥ ${alerts.wind} km/h`);
 };
 
-WeatherApp.prototype.showAlertPopup = function(message){
+WeatherApp.prototype.showAlertPopup = function (message) {
     const div = document.createElement('div');
     div.className = 'toast-alert';
     div.textContent = message;
     document.body.appendChild(div);
-    setTimeout(()=>{ div.classList.add('show'); }, 10);
-    setTimeout(()=>{ div.classList.remove('show'); div.remove(); }, 4000);
+    setTimeout(() => { div.classList.add('show'); }, 10);
+    setTimeout(() => { div.classList.remove('show'); div.remove(); }, 4000);
 };
 
 const _displayWeatherData = WeatherApp.prototype.displayWeatherData;
-WeatherApp.prototype.displayWeatherData = function(data){
+WeatherApp.prototype.displayWeatherData = function (data) {
     _displayWeatherData.call(this, data);
     this.checkSevereAlerts();
 };
@@ -900,35 +871,35 @@ style.textContent = `.toast-alert{position:fixed;right:12px;bottom:12px;backgrou
 document.head.appendChild(style);
 
 // --------------- Sharing ----------------
-WeatherApp.prototype.captureShareCard = async function(){
-    if(!window.html2canvas){ alert('Sharing lib not loaded'); return; }
+WeatherApp.prototype.captureShareCard = async function () {
+    if (!window.html2canvas) { alert('Sharing lib not loaded'); return; }
     const node = document.querySelector('.current-weather-card');
-    if(!node) return;
+    if (!node) return;
     const canvas = await html2canvas(node, { scale: 2, backgroundColor: null });
     const url = canvas.toDataURL('image/png');
     const link = document.createElement('a');
     link.href = url; link.download = `forecast-${Date.now()}.png`; link.click();
 };
 
-WeatherApp.prototype.nativeShare = async function(){
+WeatherApp.prototype.nativeShare = async function () {
     const text = `Weather in ${this.currentLocation?.name || ''}: ${this.temperature?.textContent || ''}, wind ${this.wind?.textContent || ''}.`;
-    if(navigator.share){
-        try{ await navigator.share({ title: 'Weather Now', text, url: location.href }); }catch(e){}
+    if (navigator.share) {
+        try { await navigator.share({ title: 'Weather Now', text, url: location.href }); } catch (e) { }
     } else {
         const msg = encodeURIComponent(text + ' ' + location.href);
     }
 };
 
 // --------------- AI Assistant ----------------
-WeatherApp.prototype.toggleTTS = function(){
+WeatherApp.prototype.toggleTTS = function () {
     const btn = this.ttsToggleBtn;
     const pressed = btn?.getAttribute('aria-pressed') === 'true';
-    if(!btn) return;
+    if (!btn) return;
     btn.setAttribute('aria-pressed', String(!pressed));
 };
 
-WeatherApp.prototype.appendChat = function(role, text){
-    if(!this.chatBox) return;
+WeatherApp.prototype.appendChat = function (role, text) {
+    if (!this.chatBox) return;
     const line = document.createElement('div');
     line.className = `chat-line ${role}`;
     line.textContent = text;
@@ -936,17 +907,17 @@ WeatherApp.prototype.appendChat = function(role, text){
     this.chatBox.scrollTop = this.chatBox.scrollHeight;
 };
 
-WeatherApp.prototype.handleChatSend = async function(){
+WeatherApp.prototype.handleChatSend = async function () {
     const q = (this.chatInput?.value || '').trim();
-    if(!q) return;
+    if (!q) return;
     this.appendChat('user', q);
     this.chatInput.value = '';
 
     const c = this.weatherData?.current || {};
     const ctx = `CURRENT_OBS: temp=${c.temperature_2m ?? '-'}C, wind=${c.wind_speed_10m ?? '-'}m/s, precip=${c.precipitation ?? '-'}mm, code=${c.weather_code ?? '-'}`;
-
-    const apiKey = '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';
-    if(!apiKey){
+    console.log(import.meta.env.VITE_OPENROUTER_KEY);
+    const apiKey = import.meta.env.VITE_OPENROUTER_KEY;
+    if (!apiKey) {
         const msg = 'AI disabled: missing OpenRouter key (set VITE_OPENROUTER_KEY).';
         this.appendChat('assistant', msg);
         return;
@@ -962,7 +933,7 @@ WeatherApp.prototype.handleChatSend = async function(){
         stream: true
     };
 
-    try{
+    try {
         const resp = await fetch('https://openrouter.ai/api/v1/chat/completions', {
             method: 'POST',
             headers: {
@@ -973,7 +944,7 @@ WeatherApp.prototype.handleChatSend = async function(){
             },
             body: JSON.stringify(payload)
         });
-        if(!resp.ok){ throw new Error('AI request failed'); }
+        if (!resp.ok) { throw new Error('AI request failed'); }
 
         const reader = resp.body.getReader();
         const decoder = new TextDecoder();
@@ -981,50 +952,50 @@ WeatherApp.prototype.handleChatSend = async function(){
         let spokenOnce = false;
         this.appendChat('assistant', '');
         const last = this.chatBox.lastElementChild;
-        while(true){
+        while (true) {
             const { done, value } = await reader.read();
-            if(done) break;
+            if (done) break;
             const chunk = decoder.decode(value, { stream: true });
             chunk.split('\n').forEach(line => {
                 const m = line.match(/^data: (.*)$/);
-                if(!m) return;
-                if(m[1] === '[DONE]') return;
-                try{
+                if (!m) return;
+                if (m[1] === '[DONE]') return;
+                try {
                     const data = JSON.parse(m[1]);
                     const delta = data.choices?.[0]?.delta?.content || '';
-                    if(delta){
+                    if (delta) {
                         acc += delta;
                         last.textContent = acc;
-                        if(this.ttsToggleBtn?.getAttribute('aria-pressed') === 'true' && !spokenOnce && acc.length > 120){
+                        if (this.ttsToggleBtn?.getAttribute('aria-pressed') === 'true' && !spokenOnce && acc.length > 120) {
                             speechSynthesis.cancel();
                             speechSynthesis.speak(new SpeechSynthesisUtterance(acc));
                             spokenOnce = true;
                         }
                     }
-                }catch(e){}
+                } catch (e) { }
             });
         }
-        if(this.ttsToggleBtn?.getAttribute('aria-pressed') === 'true' && !spokenOnce){
+        if (this.ttsToggleBtn?.getAttribute('aria-pressed') === 'true' && !spokenOnce) {
             speechSynthesis.cancel();
             speechSynthesis.speak(new SpeechSynthesisUtterance(acc));
         }
-    }catch(err){
+    } catch (err) {
         this.appendChat('assistant', 'Sorry, I could not reach the AI service.');
     }
 };
 
-WeatherApp.prototype.toggleVoiceInput = function(){
+WeatherApp.prototype.toggleVoiceInput = function () {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if(!SR){ alert('Voice input not supported in this browser.'); return; }
+    if (!SR) { alert('Voice input not supported in this browser.'); return; }
     const rec = new SR();
     rec.lang = 'en-US';
     rec.interimResults = false;
     rec.maxAlternatives = 1;
-    rec.onresult = (e)=>{
+    rec.onresult = (e) => {
         const t = e.results[0][0].transcript;
         this.chatInput.value = t;
         this.handleChatSend();
     };
-    rec.onerror = ()=>{};
+    rec.onerror = () => { };
     rec.start();
 };
