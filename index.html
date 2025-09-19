@@ -47,7 +47,9 @@
                             d="M14.125 7.406c.031.407.031.813 0 1.188l1 .594a.74.74 0 0 1 .344.843c-.344 1.313-1.063 2.5-2 3.469-.25.219-.625.281-.906.125l-1-.594c-.25.188-.72.469-1.032.594v1.156a.733.733 0 0 1-.562.719A7.765 7.765 0 0 1 6 15.5c-.313-.063-.563-.406-.563-.719v-1.156a5.54 5.54 0 0 1-1.03-.594l-1 .594c-.282.156-.657.094-.907-.125-.938-.969-1.656-2.156-2-3.469a.74.74 0 0 1 .344-.844l1-.593c-.032-.156-.032-.406-.032-.594 0-.156 0-.406.032-.594l-1-.562A.74.74 0 0 1 .5 6c.344-1.313 1.063-2.5 2-3.469.25-.219.625-.281.906-.125l1 .594c.25-.188.719-.469 1.032-.594V1.25c0-.344.218-.625.562-.719a7.766 7.766 0 0 1 3.969 0c.312.063.562.406.562.719v1.156c.313.125.781.406 1.031.594l1-.594c.282-.156.657-.094.907.125.937.969 1.656 2.156 2 3.469a.74.74 0 0 1-.344.844l-1 .562Zm-1.656 2c.25-1.312.25-1.469 0-2.781l1.375-.781c-.188-.563-.688-1.375-1.063-1.813l-1.375.782c-.969-.844-1.125-.938-2.375-1.375V1.843C8.75 1.812 8.281 1.75 8 1.75c-.313 0-.781.063-1.063.094v1.593c-1.25.438-1.375.532-2.375 1.376L3.188 4.03c-.468.532-.812 1.157-1.062 1.813l1.375.781c-.25 1.313-.25 1.469 0 2.781l-1.375.781c.188.563.688 1.376 1.063 1.813l1.374-.781c.97.844 1.125.937 2.375 1.375v1.594c.282.03.75.093 1.063.093.281 0 .75-.062 1.031-.094v-1.593c1.25-.438 1.375-.531 2.375-1.375l1.375.781c.375-.438.875-1.25 1.063-1.813l-1.375-.78ZM8 5c1.625 0 3 1.375 3 3 0 1.656-1.375 3-3 3a3 3 0 0 1-3-3c0-1.625 1.344-3 3-3Zm0 4.5A1.5 1.5 0 0 0 9.5 8c0-.813-.688-1.5-1.5-1.5A1.5 1.5 0 0 0 6.5 8c0 .844.656 1.5 1.5 1.5Z" />
                     </svg>
                     <span>Units</span>
-                    <img src="assets/images/arrow-down.svg" alt="" class="dropdown-arrow">
+                    <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="16" style='color:var(--primary-text);' height="16" fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
+  <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"/>
+</svg>
                 </button><button class="theme-toggle bi bi-brightness-low"></button>
 
                 <div class="units-menu" id="unitsMenu">
@@ -96,7 +98,7 @@
                 <h1 class="main-title" id="title"></h1>
             </div>
             <!-- Search Section -->
-            <div class="search-section">
+            <div class="search-section" id="search-section">
                 <div class="search-container">
                     <div class="search-input-container">
                         <img src="assets/images/icon-search.svg" alt="" class="search-icon">
@@ -111,11 +113,11 @@
             </div>
 </div>
             <!-- Weather Content -->
-            <div class="weather-content" id="weatherContent">
+            <div class="weather-content" id="weatherContent" style="display: none;">
                 <div class="flex-row">
                     <!-- Current Weather Card -->
                     <div class="flex-column">
-                        <div class="current-weather-card">
+                        <div class="current-weather-card" >
                             <div class="weather-info">
                                 <div class="location-info">
                                     <h2 class="location" id="location">Berlin, Germany</h2>
@@ -133,19 +135,19 @@
                         <div class="weather-details">
                             <div class="detail-card">
                                 <div class="detail-label">Feels Like</div>
-                                <div class="detail-value" id="feelsLike">18°C</div>
+                                <div class="detail-value" id="feelsLike">-</div>
                             </div>
                             <div class="detail-card">
                                 <div class="detail-label">Humidity</div>
-                                <div class="detail-value" id="humidity">46%</div>
+                                <div class="detail-value" id="humidity">-</div>
                             </div>
                             <div class="detail-card">
                                 <div class="detail-label">Wind</div>
-                                <div class="detail-value" id="wind">14 km/h</div>
+                                <div class="detail-value" id="wind">-</div>
                             </div>
                             <div class="detail-card">
                                 <div class="detail-label">Precipitation</div>
-                                <div class="detail-value" id="precipitation">0 mm</div>
+                                <div class="detail-value" id="precipitation">-</div>
                             </div>
                         </div>
 
@@ -165,8 +167,9 @@
                                 <button class="day-btn" id="dayBtn" aria-expanded="false" aria-haspopup="true"
                                     aria-label="Select day for hourly forecast">
                                     <span id="selectedDay">Tuesday</span>
-                                    <img src="assets/images/arrow-down.svg" alt="" class="dropdown-arrow">
-                                </button>
+<svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="16" style='color:var(--primary-text);' height="16" fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
+  <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"/>
+</svg>                                </button>
                             </div>
                         </div>
                         <div class="hourly-list" id="hourlyList">
@@ -176,24 +179,133 @@
                 </div>
             </div>
             <!-- Error State -->
+              <div class="weather-content-dummy" id="weatherContentdummy" style="display: flex;">
+                <div class="flex-row">
+                    <!-- Current Weather Card -->
+                    <div class="flex-column">
+                        <div class="current-weather-card dummy">
+                            <div class="weather-info">  
+                              <div class="loader-whether">
+<svg class="pl" width="240" height="240" viewBox="0 0 240 240">
+	<circle class="pl__ring pl__ring--a" cx="120" cy="120" r="105" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 660" stroke-dashoffset="-330" stroke-linecap="round"></circle>
+	<circle class="pl__ring pl__ring--b" cx="120" cy="120" r="35" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 220" stroke-dashoffset="-110" stroke-linecap="round"></circle>
+	<circle class="pl__ring pl__ring--c" cx="85" cy="120" r="70" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 440" stroke-linecap="round"></circle>
+	<circle class="pl__ring pl__ring--d" cx="155" cy="120" r="70" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 440" stroke-linecap="round"></circle>
+</svg>
+                            Loading...  </div>
+                            </div>
+                        </div>
+
+                        <!-- Weather Details -->
+                        <div class="weather-details">
+                            <div class="detail-card">
+                                <div class="detail-label">Feels Like</div>
+                                <div class="detail-value" id="feelsLike">-</div>
+                            </div>
+                            <div class="detail-card">
+                                <div class="detail-label">Humidity</div>
+                                <div class="detail-value" id="humidity">-</div>
+                            </div>
+                            <div class="detail-card">
+                                <div class="detail-label">Wind</div>
+                                <div class="detail-value" id="wind">-</div>
+                            </div>
+                            <div class="detail-card">
+                                <div class="detail-label">Precipitation</div>
+                                <div class="detail-value" id="precipitation">-</div>
+                            </div>
+                        </div>
+
+                        <!-- Daily Forecast -->
+                        <div class="daily-forecast">
+                            <h3 class="forecast-title">Daily forecast</h3>
+                            <div class="daily-cards" id="dailyCards">
+                <div class="daily-card">
+                   
+                </div>
+            
+                <div class="daily-card">
+                </div>
+            
+                <div class="daily-card">
+                </div>
+            
+                <div class="daily-card">
+                </div>
+            
+                <div class="daily-card">
+                </div>
+            
+                <div class="daily-card">
+                </div>
+            
+                <div class="daily-card">
+                </div>
+            </div>
+                        </div>
+                    </div>
+                    <!-- Hourly Forecast -->
+                    <div class="hourly-forecast">
+                        <div class="hourly-header">
+                            <h3 class="forecast-title">Hourly forecast</h3>
+                            <div class="day-selector">
+                                <button class="day-btn" id="dayBtn" aria-expanded="false" aria-haspopup="true" aria-label="Select day for hourly forecast">
+                                    <span id="selectedDay">-</span>
+                                    <img src="assets/images/arrow-down.svg" alt="" class="dropdown-arrow">
+                                </button>
+                        </div></div>
+                        <div class="hourly-list" id="hourlyList">
+                <div class="hourly-item">
+                   
+                </div>
+            
+                <div class="hourly-item">
+                   
+                </div>
+            
+                <div class="hourly-item">
+                    
+                </div>
+            
+                <div class="hourly-item">
+                    
+                </div>
+            
+                <div class="hourly-item">
+                   
+                </div>
+            
+                <div class="hourly-item">
+                </div>
+            
+                <div class="hourly-item">
+                </div>
+            
+                <div class="hourly-item">
+                    
+                </div>
+            
+            </div>
+                    </div>
+                </div>
+            </div>
             <div class="error-state" id="errorState" style="display: none;">
                 <img src="assets/images/icon-error.svg" alt="Error" class="error-icon">
                 <h2 class="error-title">Something went wrong</h2>
-                <p class="error-message">We couldn't connect to the server (API error). Please try again in a few
-                    moments.</p>
+                <p class="error-message">We couldn’t connect to the server (API error). Please try again in a few moments.</p>
                 <button class="retry-btn" id="retryBtn">
-                    <img src="assets/images/icon-loading.svg" alt="" class="retry-icon">
+                   <svg width="16" class="retry-icon" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M15.0938 1.40625C15.3438 1.15625 15.75 1.34375 15.75 1.65625V6.125C15.75 6.34375 15.5625 6.5 15.375 6.5H10.875C10.5625 6.5 10.375 6.125 10.625 5.875L12.3125 4.1875C11.2188 3.0625 9.6875 2.375 8 2.375C4.71875 2.375 2.0625 4.9375 1.875 8.15625C1.84375 8.375 1.6875 8.5 1.5 8.5H0.625C0.40625 8.5 0.21875 8.34375 0.25 8.125C0.4375 4.03125 3.84375 0.75 8 0.75C10.125 0.75 12.0625 1.625 13.4688 3.03125L15.0938 1.40625ZM15.3438 8.5C15.5625 8.5 15.75 8.6875 15.7188 8.90625C15.5312 13 12.125 16.25 8 16.25C5.84375 16.25 3.90625 15.4062 2.5 14L0.875 15.625C0.625 15.875 0.25 15.6875 0.25 15.375V10.875C0.25 10.6875 0.40625 10.5 0.625 10.5H5.09375C5.40625 10.5 5.59375 10.9062 5.34375 11.1562L3.65625 12.8438C4.75 13.9688 6.28125 14.625 8 14.625C11.25 14.625 13.9062 12.0938 14.0938 8.875C14.125 8.65625 14.2812 8.5 14.4688 8.5H15.3438Z" fill="white"/>
+</svg>
+
                     Retry
                 </button>
             </div>
 
-            <!-- Loading State -->
-            <div class="loading-state" id="loadingState" style="display: none;">
-                <img src="assets/images/icon-loading.svg" alt="Loading" class="loading-icon">
-                <p class="loading-text">Loading weather data...</p>
-            </div>
         </main>
     </div>
+    <!-- Loading state of whether data -->
+    
 
     <script type="module" src="./main.js"></script>
     <script type="module" src="./script.js"></script>

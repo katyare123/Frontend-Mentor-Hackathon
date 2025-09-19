@@ -48,9 +48,11 @@ class WeatherApp {
 
         // State elements
         this.errorState = document.getElementById('errorState');
-        this.loadingState = document.getElementById('loadingState');
+        // this.loadingState = document.getElementById('loadingState');
         this.retryBtn = document.getElementById('retryBtn');
         this.loader = document.getElementById('loader');
+        this.weatherContentdummy = document.getElementById('weatherContentdummy');
+        this.searchcontainer= document.getElementById('search-section')
     }
 
     bindEvents() {
@@ -155,35 +157,40 @@ class WeatherApp {
             this.dayBtn.setAttribute('aria-expanded', 'true');
         }
     }
+ 
 
+  createDaySelectorMenu() {
+    this.daySelectorMenu = document.createElement('div');
+    this.daySelectorMenu.className = 'day-selector-menu';
 
-    createDaySelectorMenu() {
-        this.daySelectorMenu = document.createElement('div');
-        this.daySelectorMenu.className = 'day-selector-menu';
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const today = new Date().getDay(); // 0 = Sunday
 
-        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        const today = new Date().getDay();
+    days.forEach((day, index) => {
+        const dayOption = document.createElement('button');
+        dayOption.className = 'day-option';
+        dayOption.textContent = day;
 
-        days.forEach((day, index) => {
-            const dayOption = document.createElement('button');
-            dayOption.className = 'day-option';
-            dayOption.textContent = day;
-            if (index === today) {
-                dayOption.classList.add('active');
-            }
+        if (index === today) {
+            dayOption.classList.add('active');
+        }
 
-            dayOption.addEventListener('click', () => {
-                this.selectDay(day, index);
-                this.daySelectorMenu.classList.remove('show');
-                this.dayBtn.setAttribute('aria-expanded', 'false');
-            });
-
-            this.daySelectorMenu.appendChild(dayOption);
+        dayOption.addEventListener('click', () => {
+            this.selectDay(day, index);
+            this.daySelectorMenu.classList.remove('show');
+            this.dayBtn.setAttribute('aria-expanded', 'false');
         });
 
-        // Insert after the day selector button
-        this.dayBtn.parentNode.insertBefore(this.daySelectorMenu, this.dayBtn.nextSibling);
-    }
+        this.daySelectorMenu.appendChild(dayOption);
+    });
+
+    
+    this.selectedDay.textContent = days[today];
+
+    // Insert after the day selector button
+    this.dayBtn.parentNode.insertBefore(this.daySelectorMenu, this.dayBtn.nextSibling);
+}
+
 
     selectDay(dayName, dayIndex) {
         this.selectedDay.textContent = dayName;
@@ -510,8 +517,8 @@ class WeatherApp {
             return `
                 <div class="hourly-item">
                  <div class="Flex">
-                    <div class="hourly-time">${formattedTime}</div>
-                    <img src="${this.getWeatherIcon(weatherCode)}" alt="${this.getWeatherDescription(weatherCode)}" class="hourly-icon">
+                 <img src="${this.getWeatherIcon(weatherCode)}" alt="${this.getWeatherDescription(weatherCode)}" class="hourly-icon">
+                 <div class="hourly-time">${formattedTime}</div>
                    </div>  <div class="hourly-temp">${this.formatTemperature(temp)}</div>
                 </div>
             `;
@@ -614,20 +621,23 @@ class WeatherApp {
     showLoading() {
         this.weatherContent.style.display = 'none';
         this.errorState.style.display = 'none';
-        this.loadingState.style.display = 'flex';
+        // this.loadingState.style.display = 'flex';
         this.loader.style.display = 'flex';
+        this.weatherContentdummy.style.display='flex';
     }
 
     hideLoading() {
-        this.loadingState.style.display = 'none';
+        // this.loadingState.style.display = 'none';
         this.weatherContent.style.display = 'flex';
         this.loader.style.display = 'none';
+        this.weatherContentdummy.style.display='none';
 
     }
 
     showError() {
         this.weatherContent.style.display = 'none';
-        this.loadingState.style.display = 'none';
+        this.searchcontainer.style.display='none';
+        // this.loadingState.style.display = 'none';
         this.errorState.style.display = 'flex';
         this.loader.style.display = 'none';
 
@@ -636,6 +646,7 @@ class WeatherApp {
     retry() {
         if (this.currentLocation) {
             this.loadWeatherData(this.currentLocation);
+        this.searchcontainer.style.display='flex';
         } else {
             this.loadDefaultWeather();
         }
@@ -643,7 +654,7 @@ class WeatherApp {
 
     async loadDefaultWeather() {
         // Show location loading
-        this.searchStatus.textContent = "Detecting location...";
+        this.searchInput.textContent = "Detecting location...";
         this.searchStatus.className = "search-status search-in-progress";
         this.currentLocation = 'Loading';
         this.loader.style.display = 'flex';
@@ -757,3 +768,9 @@ function type() {
 }
 type()
 // Delay before typing starts (wait for fade up animation)
+function makeunit() {
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const today = new Date().getDay(); 
+        document.getElementById('selectedDay').textContent = days[today];
+}
+makeunit()
