@@ -53,25 +53,12 @@ class WeatherApp {
         this.loader = document.getElementById('loader');
         this.weatherContentdummy = document.getElementById('weatherContentdummy');
         this.searchcontainer = document.getElementById('search-section')
-        // Charts & Visuals
-        this.tempChartEl = document.getElementById('tempChart');
-        this.precipChartEl = document.getElementById('precipChart');
-        this.windNeedle = document.getElementById('windNeedle');
-        this.windDirText = document.getElementById('windDirText');
-        // Share
-        this.shareCardBtn = document.getElementById('shareCardBtn');
-        this.shareNativeBtn = document.getElementById('shareNativeBtn');
-        // Alerts
-        this.alertTempInput = document.getElementById('alertTempInput');
-        this.alertWindInput = document.getElementById('alertWindInput');
-        this.saveAlertsBtn = document.getElementById('saveAlertsBtn');
-        this.enablePushBtn = document.getElementById('enablePushBtn');
-        // Chat
         this.chatBox = document.getElementById('chatBox');
         this.chatInput = document.getElementById('chatInput');
         this.sendBtn = document.getElementById('sendBtn');
         this.micBtn = document.getElementById('micBtn');
         this.ttsToggleBtn = document.getElementById('ttsToggleBtn');
+
     }
 
     bindEvents() {
@@ -122,13 +109,8 @@ class WeatherApp {
                 this.closeDaySelector();
             }
         });
-        // Share actions
-        if (this.shareCardBtn) { this.shareCardBtn.addEventListener('click', () => this.captureShareCard()); }
-        if (this.shareNativeBtn) { this.shareNativeBtn.addEventListener('click', () => this.nativeShare()); }
-        // Alerts
-        if (this.saveAlertsBtn) { this.saveAlertsBtn.addEventListener('click', () => this.saveUserAlerts()); }
-        if (this.enablePushBtn) { this.enablePushBtn.addEventListener('click', () => this.enablePushNotifications()); }
-        // Chat
+
+
         if (this.sendBtn) { this.sendBtn.addEventListener('click', () => this.handleChatSend()); }
         if (this.chatInput) { this.chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') this.handleChatSend(); }); }
         if (this.micBtn) { this.micBtn.addEventListener('click', () => this.toggleVoiceInput()); }
@@ -700,6 +682,11 @@ class WeatherApp {
         this.weatherContent.style.display = 'flex';
         this.loader.style.display = 'none';
         this.weatherContentdummy.style.display = 'none';
+        if (document.getElementById('MainH2').style.display = 'none') {
+            document.getElementById('MainH2').style.display = 'flex';
+        } else {
+            document.getElementById('MainH2').style.display = 'none';
+        }
 
     }
 
@@ -709,7 +696,8 @@ class WeatherApp {
         // this.loadingState.style.display = 'none';
         this.errorState.style.display = 'flex';
         this.loader.style.display = 'none';
-
+        this.weatherContentdummy.style.display = 'none';
+        document.getElementById('MainH2').style.display = 'none';
     }
 
     retry() {
@@ -721,57 +709,57 @@ class WeatherApp {
         }
     }
 
-   async loadDefaultWeather() {
-    this.searchInput.textContent = "Detecting location...";
-    this.searchStatus.className = "search-status search-in-progress";
-    this.currentLocation = 'Loading';
-    this.loader.style.display = 'flex';
+    async loadDefaultWeather() {
+        this.searchInput.textContent = "Detecting location...";
+        this.searchStatus.className = "search-status search-in-progress";
+        this.currentLocation = 'Loading';
+        this.loader.style.display = 'flex';
 
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(async (position) => {
-            const latitude = position.coords.latitude;
-            const longitude = position.coords.longitude;
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(async (position) => {
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
 
-            try {
-                // LocationIQ reverse geocoding
-                const response = await fetch(
-                  `https://us1.locationiq.com/v1/reverse?key=${'pk.0c5d0a05ee8808f6c5226c1c0e896159'}&lat=${latitude}&lon=${longitude}&format=json`
-                );
-                const data = await response.json();
+                try {
+                    // LocationIQ reverse geocoding
+                    const response = await fetch(
+                        `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
+                    );
+                    const data = await response.json();
 
-                // LocationIQ puts the city/town in 'address'
-                const address = data.address || {};
-                let placeName = address.village || address.town || address.city || address.hamlet || "Current Location";
-                const locationName = `${placeName}, ${address.country || ""}`;
+                    // LocationIQ puts the city/town in 'address'
+                    const address = data.address || {};
+                    let placeName = address.village || address.town || address.city || address.hamlet || "Current Location";
+                    const locationName = `${placeName}, ${address.country || ""}`;
 
-                const userLocation = {
-                    latitude,
-                    longitude,
-                    name: locationName
-                };
+                    const userLocation = {
+                        latitude,
+                        longitude,
+                        name: locationName
+                    };
 
-                this.currentLocation = userLocation;
-                this.searchInput.value = userLocation.name;
-                this.clearSearchResults();
-                this.loadWeatherData(userLocation);
+                    this.currentLocation = userLocation;
+                    this.searchInput.value = userLocation.name;
+                    this.clearSearchResults();
+                    this.loadWeatherData(userLocation);
 
-            } catch (err) {
-                console.error("Reverse geocoding failed:", err);
-                this.clearSearchResults();
-                this.fallbackToBerlin();
-            }
-        }, () => this.fallbackToBerlin());
-    } else {
-        this.fallbackToBerlin();
+                } catch (err) {
+                    console.error("Reverse geocoding failed:", err);
+                    this.clearSearchResults();
+                    this.fallbackToBerlin();
+                }
+            }, () => this.fallbackToBerlin());
+        } else {
+            this.fallbackToBerlin();
+        }
     }
-}
 
-fallbackToBerlin() {
-    const defaultLocation = { latitude: 52.52, longitude: 13.405, name: "Berlin" };
-    this.currentLocation = defaultLocation;
-    this.searchInput.value = defaultLocation.name;
-    this.loadWeatherData(defaultLocation);
-}
+    fallbackToBerlin() {
+        const defaultLocation = { latitude: 52.52, longitude: 13.405, name: "Berlin" };
+        this.currentLocation = defaultLocation;
+        this.searchInput.value = defaultLocation.name;
+        this.loadWeatherData(defaultLocation);
+    }
 
 
 
@@ -818,78 +806,6 @@ makeunit()
 
 
 
-// ------------ Notifications & Alerts ---------------
-WeatherApp.prototype.saveUserAlerts = function () {
-    const temp = parseFloat(this.alertTempInput?.value);
-    const wind = parseFloat(this.alertWindInput?.value);
-    const alerts = { temp: isNaN(temp) ? null : temp, wind: isNaN(wind) ? null : wind };
-    localStorage.setItem('userAlerts', JSON.stringify(alerts));
-    alert('Alerts saved');
-    this.checkSevereAlerts();
-};
-
-WeatherApp.prototype.enablePushNotifications = async function () {
-    if (!('Notification' in window)) { alert('Notifications not supported.'); return; }
-    const perm = await Notification.requestPermission();
-    if (perm !== 'granted') { alert('Permission not granted'); return; }
-    new Notification('Push notifications enabled for Weather Now');
-};
-
-WeatherApp.prototype.checkSevereAlerts = function () {
-    if (!this.weatherData) return;
-    const { current } = this.weatherData;
-    const alerts = JSON.parse(localStorage.getItem('userAlerts') || '{}');
-    const trigger = (msg) => {
-        this.showAlertPopup(msg);
-        if (Notification.permission === 'granted') new Notification(msg);
-    };
-    if (current.weather_code >= 95) trigger('Severe thunderstorm alert');
-    if (current.wind_speed_10m >= 20) trigger('High wind alert');
-    if (current.temperature_2m >= 40) trigger('Extreme heat alert');
-    if (current.precipitation >= 30) trigger('Flooding risk: very heavy rain');
-    if (alerts.temp != null && current.temperature_2m >= alerts.temp) trigger(`Custom alert: Temp ≥ ${alerts.temp}°C`);
-    if (alerts.wind != null && current.wind_speed_10m >= alerts.wind) trigger(`Custom alert: Wind ≥ ${alerts.wind} km/h`);
-};
-
-WeatherApp.prototype.showAlertPopup = function (message) {
-    const div = document.createElement('div');
-    div.className = 'toast-alert';
-    div.textContent = message;
-    document.body.appendChild(div);
-    setTimeout(() => { div.classList.add('show'); }, 10);
-    setTimeout(() => { div.classList.remove('show'); div.remove(); }, 4000);
-};
-
-const _displayWeatherData = WeatherApp.prototype.displayWeatherData;
-WeatherApp.prototype.displayWeatherData = function (data) {
-    _displayWeatherData.call(this, data);
-    this.checkSevereAlerts();
-};
-
-const style = document.createElement('style');
-style.textContent = `.toast-alert{position:fixed;right:12px;bottom:12px;background:#1f2937;color:#fff;border:1px solid #374151;padding:10px 12px;border-radius:8px;opacity:0;transform:translateY(10px);transition:all .3s;z-index:9999}.toast-alert.show{opacity:1;transform:translateY(0)}`;
-document.head.appendChild(style);
-
-// --------------- Sharing ----------------
-WeatherApp.prototype.captureShareCard = async function () {
-    if (!window.html2canvas) { alert('Sharing lib not loaded'); return; }
-    const node = document.querySelector('.current-weather-card');
-    if (!node) return;
-    const canvas = await html2canvas(node, { scale: 2, backgroundColor: null });
-    const url = canvas.toDataURL('image/png');
-    const link = document.createElement('a');
-    link.href = url; link.download = `forecast-${Date.now()}.png`; link.click();
-};
-
-WeatherApp.prototype.nativeShare = async function () {
-    const text = `Weather in ${this.currentLocation?.name || ''}: ${this.temperature?.textContent || ''}, wind ${this.wind?.textContent || ''}.`;
-    if (navigator.share) {
-        try { await navigator.share({ title: 'Weather Now', text, url: location.href }); } catch (e) { }
-    } else {
-        const msg = encodeURIComponent(text + ' ' + location.href);
-    }
-};
-
 // --------------- AI Assistant ----------------
 WeatherApp.prototype.toggleTTS = function () {
     const btn = this.ttsToggleBtn;
@@ -910,13 +826,17 @@ WeatherApp.prototype.appendChat = function (role, text) {
 WeatherApp.prototype.handleChatSend = async function () {
     const q = (this.chatInput?.value || '').trim();
     if (!q) return;
+
+    // Append user message
     this.appendChat('user', q);
     this.chatInput.value = '';
 
+    // Prepare weather context
     const c = this.weatherData?.current || {};
     const ctx = `CURRENT_OBS: temp=${c.temperature_2m ?? '-'}C, wind=${c.wind_speed_10m ?? '-'}m/s, precip=${c.precipitation ?? '-'}mm, code=${c.weather_code ?? '-'}`;
-    console.log(import.meta.env.VITE_OPENROUTER_KEY);
-    const apiKey = import.meta.env.VITE_OPENROUTER_KEY;
+
+    // Get API key from Vite env
+    const apiKey = '';
     if (!apiKey) {
         const msg = 'AI disabled: missing OpenRouter key (set VITE_OPENROUTER_KEY).';
         this.appendChat('assistant', msg);
@@ -924,6 +844,7 @@ WeatherApp.prototype.handleChatSend = async function () {
     }
 
     const sys = 'You are a concise weather assistant. Answer using provided CURRENT_OBS context and general weather knowledge. Do not fabricate data or call external APIs yourself.';
+
     const payload = {
         model: 'deepseek/deepseek-chat-v3.1:free',
         messages: [
@@ -999,3 +920,8 @@ WeatherApp.prototype.toggleVoiceInput = function () {
     rec.onerror = () => { };
     rec.start();
 };
+const Openbot = document.getElementById('Open-bot');
+const asidechatbot = document.getElementById('aside-chatbot');
+Openbot.addEventListener('click',()=>{
+    asidechatbot.style.display='flex';
+})

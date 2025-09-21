@@ -14,6 +14,8 @@
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
         integrity="sha384-tViUnnbYAV00FLIhhi3v/dWt3Jxw4gZQcNoSCxCIFNJVCx7/D55/wXsrNIRANwdD" crossorigin="anonymous">
+        <link rel="stylesheet" href="./styles.css">
+        <script type="module" src="./script.js"></script>
 </head>
 
 <body class="metric dark">
@@ -97,7 +99,7 @@
         <!-- Main Content -->
         <main class="main">
             <div class="cl">
-                <div class="main-h1-center">
+                <div class="main-h1-center" style="align-items: center; justify-content: center;" id="MainH2">
                     <h1 class="main-title" id="title"></h1>
                 </div>
                 <!-- Search Section -->
@@ -161,22 +163,12 @@
                                 </div>
                             </div>
 
-                            <!-- Charts & Visuals -->
                            
                             <!-- Daily Forecast -->
                             <div class="daily-forecast">
                                 <h3 class="forecast-title">Daily forecast</h3>
                                 <div class="daily-cards" id="dailyCards">
                                     <!-- Daily forecast cards will be populated by JavaScript -->
-                                </div>
-                            </div>
-
-                            <!-- Social / Sharing -->
-                            <div class="share-section">
-                                <h3 class="forecast-title">Share</h3>
-                                <div class="share-row">
-                                    <button class="share-btn" id="shareCardBtn">Save forecast card</button>
-                                    <button class="share-btn" id="shareNativeBtn">Share</button>
                                 </div>
                             </div>
                         </div>
@@ -201,67 +193,7 @@
                             </div>
                         </div>
                         <!-- AI Assistant & Alerts Sidebar -->
-                        <aside class="sidebar">
-                            <section class="alerts-section" aria-label="Notifications & Alerts">
-                                <h3 class="forecast-title">Notifications & Alerts</h3>
-                                <div class="alerts-grid">
-                                    <label class="input-label">Custom temp alert (°C)
-                                        <input id="alertTempInput" type="number" inputmode="numeric" class="input"
-                                            placeholder="e.g. 35">
-                                    </label>
-                                    <label class="input-label">Custom wind alert (km/h)
-                                        <input id="alertWindInput" type="number" inputmode="numeric" class="input"
-                                            placeholder="e.g. 60">
-                                    </label>
-                                    <button id="saveAlertsBtn" class="share-btn">Save alerts</button>
-                                    <button id="enablePushBtn" class="share-btn">Enable push notifications</button>
-                                </div>
-                            </section>
-                            <section class="chat-section" aria-label="AI Assistant">
-                                <h3 class="forecast-title">AI Assistant</h3>
-                                <div class="chat-box" id="chatBox" aria-live="polite"></div>
-                                <div class="chat-controls">
-                                    <button id="micBtn" class="icon-btn" aria-label="Start voice input">🎙️</button>
-                                    <input id="chatInput" class="input" type="text" placeholder="Ask a question...">
-                                    <button id="sendBtn" class="share-btn">Send</button>
-                                    <button id="ttsToggleBtn" class="icon-btn" aria-pressed="false"
-                                        aria-label="Toggle voice output">🔊</button>
-                                </div>
-                            </section>
-                             <div class="charts-visuals">
-                                <h3 class="forecast-title">Charts & Visuals</h3>
-                                <div class="charts-grid">
-                                    <div class="chart-card">
-                                        <label for="tempChart">Temperature</label>
-                                        <div class="canvas">
-                                            <canvas id="tempChart" aria-label="Hourly temperature chart"
-                                                role="img"></canvas>
-                                        </div>
-                                    </div>
-                                    <div class="chart-card">
-                                        <label for="precipChart">Precipitation</label>
-                                        <div class="canvas">
-                                            <canvas id="precipChart" aria-label="Hourly precipitation chart"
-                                                role="img"></canvas>
-                                        </div>
-                                    </div>
-                                    <div class="compass-card">
-                                        <label for="compass">Compass</label>
-                                        <div class="compass" aria-label="Wind direction compass">
-                                            <div class="compass-rose">
-                                                <span>N</span>
-                                                <span>E</span>
-                                                <span>S</span>
-                                                <span>W</span>
-                                            </div>
-                                            <div class="compass-needle" id="windNeedle"></div>
-                                            <div class="compass-value" id="windDirText">-</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </aside>
+                         
                     </div>
                 </div>
                 <!-- Error State -->
@@ -402,17 +334,22 @@
                         Retry
                     </button>
                 </div>
-
+<button id="Open-bot">AI</button>
+                        <aside class="sidebar" id="aside-chatbot" style="display: none;">
+                            <section class="chat-section" aria-label="AI Assistant">
+                                <h3 class="AI-title"><img src="./assets/images/favicon-32x32.png" alt="" srcset=""> AI Assistant</h3>
+                                <div class="chat-box" id="chatBox" aria-live="polite"><h2 class="agenda">Need today’s weather?</h2></div>
+                                <div class="chat-controls">
+                                    <button id="micBtn" class="icon-btn" aria-label="Start voice input">🎙️</button>
+                                    <input id="chatInput" class="input" type="text" placeholder="Ask a question...">
+                                    <button id="sendBtn" class="share-btn">Send</button>
+                                    <button id="ttsToggleBtn" class="icon-btn" aria-pressed="false"
+                                        aria-label="Toggle voice output">🔊</button>
+                                </div>
+                            </section>
+                        </aside>
         </main>
     </div>
-    <!-- Loading state of whether data -->
-
-
-    <!-- External libs for charts and sharing (no API keys here) -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"
-        crossorigin="anonymous"></script>
-    <script type="module" src="./main.js"></script>
     <script type="module" src="./script.js"></script>
 </body>
 
