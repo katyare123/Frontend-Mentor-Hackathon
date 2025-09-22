@@ -518,7 +518,7 @@ class WeatherApp {
             const weatherCode = daily.weather_code[index];
             const maxTemp = daily.temperature_2m_max[index];
             const minTemp = daily.temperature_2m_min[index];
-
+            animations.setWeatherBackground(weatherCode);
             return `
                 <div class="daily-card">
                     <div class="daily-day">${days[dayIndex]}</div>
@@ -752,6 +752,7 @@ class WeatherApp {
         } else {
             this.fallbackToBerlin();
         }
+
     }
 
     fallbackToBerlin() {
@@ -806,18 +807,29 @@ makeunit()
 
 
 
-// --------------- AI Assistant ----------------
+// ---------------- AI Assistant ----------------
+
+WeatherApp.prototype.initChat = function () {
+    if (this.chatBox) {
+        const greet = document.createElement('div');
+        greet.className = 'chat-line chat-assistant intro';
+        greet.textContent = 'Need today’s weather?';
+        this.chatBox.appendChild(greet);
+        this.chatBox.scrollTop = this.chatBox.scrollHeight;
+    }
+};
+
 WeatherApp.prototype.toggleTTS = function () {
     const btn = this.ttsToggleBtn;
-    const pressed = btn?.getAttribute('aria-pressed') === 'true';
     if (!btn) return;
+    const pressed = btn.getAttribute('aria-pressed') === 'true';
     btn.setAttribute('aria-pressed', String(!pressed));
 };
 
 WeatherApp.prototype.appendChat = function (role, text) {
     if (!this.chatBox) return;
     const line = document.createElement('div');
-    line.className = `chat-line ${role}`;
+    line.className = `chat-line chat-${role}`;
     line.textContent = text;
     this.chatBox.appendChild(line);
     this.chatBox.scrollTop = this.chatBox.scrollHeight;
@@ -827,28 +839,27 @@ WeatherApp.prototype.handleChatSend = async function () {
     const q = (this.chatInput?.value || '').trim();
     if (!q) return;
 
-    // Append user message
     this.appendChat('user', q);
     this.chatInput.value = '';
 
-    // Prepare weather context
     const c = this.weatherData?.current || {};
-    const ctx = `CURRENT_OBS: temp=${c.temperature_2m ?? '-'}C, wind=${c.wind_speed_10m ?? '-'}m/s, precip=${c.precipitation ?? '-'}mm, code=${c.weather_code ?? '-'}`;
+    const ctx =
+        `CURRENT_OBS: temp=${c.temperature_2m ?? '-'}C, ` +
+        `wind=${c.wind_speed_10m ?? '-'}m/s, ` +
+        `precip=${c.precipitation ?? '-'}mm, ` +
+        `code=${c.weather_code ?? '-'}`;
 
-    // Get API key from Vite env
-    const apiKey = '';
+    const apiKey = 's';
     if (!apiKey) {
-        const msg = 'AI disabled: missing OpenRouter key (set VITE_OPENROUTER_KEY).';
-        this.appendChat('assistant', msg);
+        this.appendChat('assistant', 'AI disabled: missing OpenRouter key.');
         return;
     }
-
-    const sys = 'You are a concise weather assistant. Answer using provided CURRENT_OBS context and general weather knowledge. Do not fabricate data or call external APIs yourself.';
 
     const payload = {
         model: 'deepseek/deepseek-chat-v3.1:free',
         messages: [
-            { role: 'system', content: sys },
+            { role: 'system',
+              content: 'You are a concise weather assistant. Use only the provided CURRENT_OBS context and general weather knowledge.' },
             { role: 'user', content: `${ctx}\n\n${q}` }
         ],
         stream: true
@@ -865,63 +876,197 @@ WeatherApp.prototype.handleChatSend = async function () {
             },
             body: JSON.stringify(payload)
         });
-        if (!resp.ok) { throw new Error('AI request failed'); }
+        if (!resp.ok) throw new Error('AI request failed');
 
         const reader = resp.body.getReader();
         const decoder = new TextDecoder();
         let acc = '';
         let spokenOnce = false;
+
         this.appendChat('assistant', '');
         const last = this.chatBox.lastElementChild;
+
         while (true) {
             const { done, value } = await reader.read();
             if (done) break;
             const chunk = decoder.decode(value, { stream: true });
-            chunk.split('\n').forEach(line => {
-                const m = line.match(/^data: (.*)$/);
-                if (!m) return;
-                if (m[1] === '[DONE]') return;
+            for (const line of chunk.split('\n')) {
+                const match = line.match(/^data: (.*)$/);
+                if (!match) continue;
+                if (match[1] === '[DONE]') continue;
                 try {
-                    const data = JSON.parse(m[1]);
+                    const data = JSON.parse(match[1]);
                     const delta = data.choices?.[0]?.delta?.content || '';
                     if (delta) {
                         acc += delta;
                         last.textContent = acc;
-                        if (this.ttsToggleBtn?.getAttribute('aria-pressed') === 'true' && !spokenOnce && acc.length > 120) {
+
+                        if (
+                            this.ttsToggleBtn?.getAttribute('aria-pressed') === 'true' &&
+                            !spokenOnce &&
+                            acc.length > 120
+                        ) {
                             speechSynthesis.cancel();
                             speechSynthesis.speak(new SpeechSynthesisUtterance(acc));
                             spokenOnce = true;
                         }
                     }
-                } catch (e) { }
-            });
+                } catch { }
+            }
         }
+
         if (this.ttsToggleBtn?.getAttribute('aria-pressed') === 'true' && !spokenOnce) {
             speechSynthesis.cancel();
             speechSynthesis.speak(new SpeechSynthesisUtterance(acc));
         }
     } catch (err) {
+        console.error(err);
         this.appendChat('assistant', 'Sorry, I could not reach the AI service.');
     }
 };
 
 WeatherApp.prototype.toggleVoiceInput = function () {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) { alert('Voice input not supported in this browser.'); return; }
+    if (!SR) {
+        alert('Voice input not supported in this browser.');
+        return;
+    }
     const rec = new SR();
     rec.lang = 'en-US';
     rec.interimResults = false;
     rec.maxAlternatives = 1;
-    rec.onresult = (e) => {
+    rec.onresult = e => {
         const t = e.results[0][0].transcript;
         this.chatInput.value = t;
         this.handleChatSend();
     };
-    rec.onerror = () => { };
     rec.start();
 };
+
+
+
+
 const Openbot = document.getElementById('Open-bot');
 const asidechatbot = document.getElementById('aside-chatbot');
-Openbot.addEventListener('click',()=>{
-    asidechatbot.style.display='flex';
-})
+Openbot.addEventListener('click', () => {
+    asidechatbot.style.display = 'flex';
+});
+
+const animations = {
+    init() {
+        this.app = document.getElementById('app');
+        this.particlesContainer = document.getElementById('weatherParticles');
+    },
+
+    setWeatherBackground(weatherCode) {
+        if (!this.app) return;
+
+        // Remove existing weather classes
+        this.app.classList.remove('weather-clear', 'weather-cloudy', 'weather-rainy', 'weather-snowy', 'weather-stormy');
+
+        // Add appropriate weather class based on weather code
+        if (weatherCode === 0 || weatherCode === 1) {
+            this.app.classList.add('weather-clear');
+            this.createParticles('clear');
+        } else if (weatherCode === 2 || weatherCode === 3) {
+            this.app.classList.add('weather-cloudy');
+            this.createParticles('cloudy');
+        } else if (weatherCode >= 51 && weatherCode <= 67) {
+            this.app.classList.add('weather-rainy');
+            this.createParticles('rain');
+        } else if (weatherCode >= 71 && weatherCode <= 86) {
+            this.app.classList.add('weather-snowy');
+            this.createParticles('snow');
+        } else if (weatherCode >= 95) {
+            this.app.classList.add('weather-stormy');
+            this.createParticles('storm');
+        } else {
+            this.app.classList.add('weather-cloudy');
+            this.createParticles('cloudy');
+        }
+    },
+
+    createParticles(weatherType) {
+        if (!this.particlesContainer) return;
+
+        // Clear existing particles
+        this.particlesContainer.innerHTML = '';
+
+        let particleCount = 0;
+        let particleClass = '';
+
+        switch (weatherType) {
+            case 'rain':
+                particleCount = 50;
+                particleClass = 'rain';
+                break;
+            case 'snow':
+                particleCount = 30;
+                particleClass = 'snow';
+                break;
+            case 'clear':
+                particleCount = 10;
+                particleClass = 'clear';
+                break;
+            case 'storm':
+                particleCount = 60;
+                particleClass = 'rain';
+                break;
+            default:
+                particleCount = 5;
+                particleClass = 'clear';
+        }
+
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = `particle ${particleClass}`;
+
+            // Random positioning
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 3 + 's';
+            particle.style.animationDuration = (Math.random() * 2 + 1) + 's';
+
+            if (particleClass === 'clear') {
+                particle.style.width = Math.random() * 4 + 2 + 'px';
+                particle.style.height = particle.style.width;
+            }
+
+            this.particlesContainer.appendChild(particle);
+        }
+    },
+
+    animateValue(element, start, end, duration = 1000) {
+        const startTime = performance.now();
+        const startValue = parseFloat(start) || 0;
+        const endValue = parseFloat(end) || 0;
+        const difference = endValue - startValue;
+
+        const animate = (currentTime) => {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+
+            // Easing function (ease-out)
+            const easeOut = 1 - Math.pow(1 - progress, 3);
+            const currentValue = startValue + (difference * easeOut);
+
+            if (element.textContent.includes('°')) {
+                element.textContent = Math.round(currentValue) + '°';
+            } else if (element.textContent.includes('%')) {
+                element.textContent = Math.round(currentValue) + '%';
+            } else {
+                element.textContent = Math.round(currentValue);
+            }
+
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            }
+        };
+
+        requestAnimationFrame(animate);
+    }
+};
+const app = new WeatherApp();
+document.addEventListener('DOMContentLoaded', () => {
+    animations.init();
+    app.initChat();
+});

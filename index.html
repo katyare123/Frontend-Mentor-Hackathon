@@ -21,7 +21,8 @@
 <body class="metric dark">
     <div class="loader" id="loader" style="display: none ;"></div>
     <!-- <img  class="Uicupy" src="./design/image.png" alt="" srcset=""> -->
-    <div class="app">
+    <div class="app" id="app">
+        <div id="weatherParticles" class="weatherParticles"></div>
         <!-- Header Completed  -->
         <header class="header">
             <div class="logo">
@@ -338,7 +339,7 @@
                         <aside class="sidebar" id="aside-chatbot" style="display: none;">
                             <section class="chat-section" aria-label="AI Assistant">
                                 <h3 class="AI-title"><img src="./assets/images/favicon-32x32.png" alt="" srcset=""> AI Assistant</h3>
-                                <div class="chat-box" id="chatBox" aria-live="polite"><h2 class="agenda">Need today’s weather?</h2></div>
+                                <div class="chat-box" id="chatBox" aria-live="polite"></div>
                                 <div class="chat-controls">
                                     <button id="micBtn" class="icon-btn" aria-label="Start voice input">🎙️</button>
                                     <input id="chatInput" class="input" type="text" placeholder="Ask a question...">
